@@ -16,7 +16,7 @@ BIAS CORRECTION RULES:
 - Protect rural applicants by using lower liquidity benchmarks.
 - Apply income multipliers for informal workers (Mama Mbogas, Boda Boda) as M-Pesa captures only part of their cash flow.
 - Treat Fuliza as a liquidity tool unless excessive.
-- Normalize for seasonal patterns (harvest, Ramadan, school fees).
+- Normalize for seasonal patterns (harvest, Ramadan, school fees)
 
 THIN-FILE PROTOCOL:
 - If <60 days of data, cap loan at KES 2,000.
