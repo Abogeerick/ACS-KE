@@ -225,11 +225,26 @@ export default function App() {
                   </button>
                   <button 
                     onClick={() => setPage('input')}
-                    className="bg-white text-slate-900 border-2 border-slate-200 px-10 py-5 rounded-2xl font-bold text-lg hover:border-emerald-600 hover:text-emerald-600 transition-all flex items-center gap-3"
+                    className="bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-100 flex items-center gap-3 group"
                   >
                     Try Demo Data
-                    <Smartphone size={20} />
+                    <Smartphone size={20} className="group-hover:scale-110 transition-transform" />
                   </button>
+                </div>
+
+                <div className="pt-8 border-t border-slate-200">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Featured Personas</div>
+                  <div className="flex flex-wrap gap-3">
+                    {['James', 'Sarah', 'Otieno'].map(name => (
+                      <div key={name} className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                        {name}
+                      </div>
+                    ))}
+                    <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-400">
+                      +7 More
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-8 pt-10 border-t border-slate-200">
@@ -407,8 +422,10 @@ export default function App() {
               {/* Personas Selector - Exceptional UI */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {DEMO_PERSONAS.map(p => (
-                  <button
+                  <motion.button
                     key={p.id}
+                    whileHover={{ y: -4, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => handleSelectPersona(p)}
                     className={cn(
                       "relative p-5 rounded-[2rem] border-2 text-left transition-all group overflow-hidden",
@@ -429,7 +446,10 @@ export default function App() {
                         <CheckCircle2 size={16} className="text-emerald-600" />
                       </div>
                     )}
-                  </button>
+                    {['James', 'Sarah', 'Otieno'].includes(p.name) && (
+                      <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-600/5 rounded-full blur-xl" />
+                    )}
+                  </motion.button>
                 ))}
               </div>
 
