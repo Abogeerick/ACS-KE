@@ -47,6 +47,7 @@ export interface CreditAssessment {
     kiswahili: string;
     actions: string[];
   };
+  biasAdjustments?: string[];
 }
 
 export interface Persona {
@@ -55,4 +56,5 @@ export interface Persona {
   role: string;
   location: string;
   data: ApplicantData;
+  precomputedResult?: CreditAssessment;
 }

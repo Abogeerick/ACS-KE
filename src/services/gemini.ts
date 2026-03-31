@@ -28,6 +28,7 @@ OUTPUT REQUIREMENTS:
 - Recommendation: Max loan amount (KES), tenor, interest rate, and decision label.
 - Narrative: 3 paragraphs in respectful, human language.
 - Feedback: 3 specific actions to improve score in 90 days, provided in both English and Kiswahili.
+- Bias Adjustments: A list of specific corrections applied (e.g., "Rural income benchmark applied").
 - End feedback with: "Thamani yako ya fedha inakua. / Your financial value is growing."
 
 Return a valid JSON object matching the CreditAssessment interface.
@@ -51,54 +52,65 @@ export async function generateAssessment(data: ApplicantData): Promise<CreditAss
   ${data.businessSms}
   `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: prompt,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          score: { type: Type.NUMBER },
-          tier: { type: Type.STRING, enum: ["A", "B", "C", "D"] },
-          tierDescription: { type: Type.STRING },
-          modules: {
-            type: Type.ARRAY,
-            items: {
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3.1-pro-preview",
+      contents: prompt,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            score: { type: Type.NUMBER },
+            tier: { type: Type.STRING, enum: ["A", "B", "C", "D"] },
+            tierDescription: { type: Type.STRING },
+            modules: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  name: { type: Type.STRING },
+                  score: { type: Type.NUMBER },
+                  weight: { type: Type.NUMBER },
+                  contribution: { type: Type.NUMBER },
+                  insights: { type: Type.ARRAY, items: { type: Type.STRING } }
+                }
+              }
+            },
+            recommendation: {
               type: Type.OBJECT,
               properties: {
-                name: { type: Type.STRING },
-                score: { type: Type.NUMBER },
-                weight: { type: Type.NUMBER },
-                contribution: { type: Type.NUMBER },
-                insights: { type: Type.ARRAY, items: { type: Type.STRING } }
+                maxLoanAmount: { type: Type.NUMBER },
+                tenor: { type: Type.STRING },
+                interestRate: { type: Type.STRING },
+                decision: { type: Type.STRING }
               }
-            }
+            },
+            narrative: { type: Type.ARRAY, items: { type: Type.STRING } },
+            feedback: {
+              type: Type.OBJECT,
+              properties: {
+                english: { type: Type.STRING },
+                kiswahili: { type: Type.STRING },
+                actions: { type: Type.ARRAY, items: { type: Type.STRING } }
+              }
+            },
+            biasAdjustments: { type: Type.ARRAY, items: { type: Type.STRING } }
           },
-          recommendation: {
-            type: Type.OBJECT,
-            properties: {
-              maxLoanAmount: { type: Type.NUMBER },
-              tenor: { type: Type.STRING },
-              interestRate: { type: Type.STRING },
-              decision: { type: Type.STRING }
-            }
-          },
-          narrative: { type: Type.ARRAY, items: { type: Type.STRING } },
-          feedback: {
-            type: Type.OBJECT,
-            properties: {
-              english: { type: Type.STRING },
-              kiswahili: { type: Type.STRING },
-              actions: { type: Type.ARRAY, items: { type: Type.STRING } }
-            }
-          }
-        },
-        required: ["score", "tier", "modules", "recommendation", "narrative", "feedback"]
+          required: ["score", "tier", "modules", "recommendation", "narrative", "feedback"]
+        }
       }
-    }
-  });
+    });
 
-  return JSON.parse(response.text || '{}');
+    const text = response.text || '';
+    // Robust parsing: extract JSON if there's extra text
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Invalid response format");
+    
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("Gemini Error:", error);
+    throw error;
+  }
 }
