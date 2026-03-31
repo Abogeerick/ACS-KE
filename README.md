@@ -195,7 +195,7 @@ ACS-KE makes that financial behaviour legible. It bridges the gap between the fi
 
 ## Ethical Design Principles
 
-ACS-KE was built with responsible AI principles at its core:
+ACS-KE was built with responsible AI principles at its core
 
 - **No contact list scoring** — we do not use phone contact lists, location tracking, or social media activity. These data types violate Kenya's Data Protection Act (2019) and create discriminatory proxies
 - **No hard declines** — the minimum score is 300. Every applicant receives either an approval or a starter credit pathway. Credit invisibility ends here
